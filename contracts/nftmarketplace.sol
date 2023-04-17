@@ -3,28 +3,19 @@ pragma solidity ^0.8.9;
 
 // Uncomment this line to use console.log
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
-import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155URIStorage.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 // import "hardhat/console.sol";
 
-contract NFTMarketplace is ERC1155URIStorage, AccessControl {
+contract NFTMarketplace is ERC1155URIStorage {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
     Counters.Counter private _itemsSold;
 
     uint256 listingPrice = 0.00025 ether;
 
-    // 定义角色
-    bytes32 public constant CREATOR_ROLE = keccak256("CREATOR_ROLE");
-    bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
-
     address payable owner;
-    constructor() ERC1155("") {
-        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
-        _grantRole(CREATOR_ROLE, msg.sender);
-        _grantRole(ADMIN_ROLE, msg.sender);
-    }
+    constructor() ERC1155("") {}
 
     struct MarketItem {
         uint256 tokenId;
@@ -43,10 +34,6 @@ contract NFTMarketplace is ERC1155URIStorage, AccessControl {
     );
 
     mapping(uint256 => MarketItem) private idToMarketItem;
-
-    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC1155, AccessControl) returns (bool) {
-        return super.supportsInterface(interfaceId);
-    }
 
     function updateListingPrice(uint _listingPrice) public payable {
         require(owner == msg.sender);
